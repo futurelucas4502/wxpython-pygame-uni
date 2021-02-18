@@ -1,0 +1,2 @@
+gameRun = False
+openMenu = False
