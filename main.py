@@ -1,5 +1,6 @@
 import run
 gameRun = False
+error = ""
 
 
 def main():

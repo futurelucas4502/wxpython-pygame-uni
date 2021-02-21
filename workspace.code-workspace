@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"[json]": {
+			"editor.formatOnSave": false,
+			"editor.formatOnType": false,
+			"editor.formatOnPaste": false
+		},
+	},
+}

@@ -1,2 +1,0 @@
-gameRun = False
-openMenu = False
