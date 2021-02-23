@@ -2,11 +2,12 @@ import wx
 import main
 from menu import Menu
 from game import Game
+from level_editor import LevelEditor
 
 
 def game():
     app = wx.App()
-    Menu(None, title="Main Menu", size=(250, 250),
+    Menu(None, title="Main Menu", size=(250, 300),
               style=wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX))
     if main.error != "": # Error handler
         wx.MessageDialog(None, main.error, "An error occured",
@@ -15,4 +16,7 @@ def game():
     app.MainLoop()  # When i click the start game button the gameRun variable gets changed to True then closes the menu meaning line 14 below runs
     if main.gameRun:
         Game()  # Start the game
+        return True  # Game has finished or been closed so return True to open the menu
+    if main.levelEditorRun:
+        LevelEditor()  # Start the game
         return True  # Game has finished or been closed so return True to open the menu

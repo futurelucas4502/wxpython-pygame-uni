@@ -10,27 +10,31 @@ class Player(pygame.sprite.Sprite):
 		# Call the parent class (Sprite) constructor
 		super().__init__()
 
-		# Load the crab image and get its rect.
-		self.image = pygame.transform.scale(pygame.image.load('assets/player.png').convert_alpha(), size)
+		# Load the player image and get its rect
+		self.playerRight = pygame.transform.scale(pygame.image.load('assets/player.png').convert_alpha(), size)
+		self.playerLeft = pygame.transform.flip(pygame.transform.scale(pygame.image.load('assets/player.png').convert_alpha(), size), True, False)
+		self.image = self.playerRight
 		self.rect = self.image.get_rect()
 		self.rect.x = pos[0]
 		self.rect.y = pos[1]
 		self.y_velocity = 0
-		self.jumped = False
 
 	def update(self, screen, bottom):
 		key = pygame.key.get_pressed()
 		# Move left and right with edge collision detection
 		# right edge of the window
 		if key[K_d] and self.rect.right < screen.get_size()[0]:
+			self.image = self.playerRight
 			self.rect.x += 3
 		if key[K_a] and self.rect.left > 0:  # 0 will be the left edge of the window
+			self.image = self.playerLeft
 			self.rect.x -= 3
-		if key[K_SPACE] and self.jumped == False:
+		if key[K_SPACE]:
 			self.y_velocity -= 10
-			self.jumped = True
-		if key[K_SPACE] == False:
-			self.jumped = False
+
+		# Collision
+
+		# for tile in 
 
 		# Gravity
 		self.y_velocity += 1
@@ -39,6 +43,6 @@ class Player(pygame.sprite.Sprite):
 		if self.y_velocity > 10:
 			self.y_velocity = 10
 
-		elif self.rect.bottom > bottom:
+		if self.rect.bottom > bottom:
 			self.rect.bottom = bottom
 			self.y_velocity = 0

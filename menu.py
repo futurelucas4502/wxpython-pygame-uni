@@ -27,6 +27,7 @@ class Menu(wx.Frame):
             self.config.add_section('highscores')
 
             self.config['settings']['experimental'] = "False"
+            self.config['settings']['json'] = "False"  # JSON world loading was the original method i created but its slow and clunky as every single loop it runs tileWidth * tileHeight so a lot of times whereas coords world loading loads worlds using a new method but world loading takes slightly longer however after its loaded each loop only has to be run for the total number of solid objects so a lot lot less therefore making it faster
 
             with open('config.ini', 'w') as configfile:
                 self.config.write(configfile)
@@ -44,7 +45,8 @@ class Menu(wx.Frame):
                 e.Veto()
                 return
 
-        self.Destroy() # If force closed just close
+        self.Destroy()  # If force closed just close
+
 
 class Main(wx.Panel):
 
@@ -57,6 +59,7 @@ class Main(wx.Panel):
         self.startBtn = wx.Button(self, label="Start Game", size=(50, 0))
         self.scoreBtn = wx.Button(self, label="Highscores", size=(50, 0))
         self.settingsBtn = wx.Button(self, label="Settings", size=(50, 0))
+        self.levelEditorBtn = wx.Button(self, label="Level Editor", size=(50, 0))
         self.quitBtn = wx.Button(self, label="Quit", size=(50, 0))
 
         # Add things to button column
@@ -70,6 +73,8 @@ class Main(wx.Panel):
         self.sizer.AddSpacer(10)
         self.sizer.Add(self.settingsBtn, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 20)
         self.sizer.AddSpacer(10)
+        self.sizer.Add(self.levelEditorBtn, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 20)
+        self.sizer.AddSpacer(10)
         self.sizer.Add(self.quitBtn, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 20)
 
         # Adds padding to the bottom to push it to the top so it ends up in the center
@@ -81,6 +86,7 @@ class Main(wx.Panel):
         self.startBtn.Bind(wx.EVT_BUTTON, self.start)
         self.scoreBtn.Bind(wx.EVT_BUTTON, self.score)
         self.settingsBtn.Bind(wx.EVT_BUTTON, self.settings)
+        self.levelEditorBtn.Bind(wx.EVT_BUTTON, self.levelEditor)
         self.quitBtn.Bind(wx.EVT_BUTTON, self.onQuit)
         self.Layout()
 
@@ -99,6 +105,10 @@ class Main(wx.Panel):
             self.GetParent().SetTitle("Settings")
             self.Hide()
             self.GetParent().settings.Show()
+    
+    def levelEditor(self, e):
+        main.levelEditorRun = True
+        self.GetParent().Destroy()
 
 
 class Settings(wx.Panel):
@@ -107,7 +117,30 @@ class Settings(wx.Panel):
         super().__init__(*args, **kw)
         # Create button column
         self.sizer = wx.BoxSizer(wx.VERTICAL)
+
+        # Draw buttons
+        self.backBtn = wx.Button(self, label="Back", size=(50, 0))
+
+        # Add things to button column
+        # Adds padding to the top to push it to the bottom
+        self.sizer.AddSpacer(20)
+
+        # Horizontal center and 20 padding on all sides so buttons arent bunched together
+        self.sizer.Add(self.backBtn, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 20)
+        # self.sizer.AddSpacer(10)
+        # # Some other button
+
+        # Adds padding to the bottom to push it to the top so it ends up in the center
+        self.sizer.AddSpacer(20)
+
         # Tells panel to add a sizer child and uses the one we just made
-        self.sizer.AddStretchSpacer()
         self.SetSizer(self.sizer)
+        # Bind events to the buttons to allow them to be clicked like an event listener really
+        self.backBtn.Bind(wx.EVT_BUTTON, self.back)
         self.Layout()
+
+    def back(self, e):
+        if self.IsShown():
+            self.GetParent().SetTitle("Main Menu")
+            self.Hide()
+            self.GetParent().main.Show()

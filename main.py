@@ -1,5 +1,6 @@
 import run
 gameRun = False
+levelEditorRun = False
 error = ""
 
 
