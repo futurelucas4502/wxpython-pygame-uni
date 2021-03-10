@@ -30,10 +30,18 @@ class LevelEditor():
             'assets/grass.png').convert(), (self.tileSize, self.tileSize))
         self.key_img = pygame.transform.scale(pygame.image.load(
             'assets/key.png').convert_alpha(), (self.tileSize, self.tileSize))
+        self.doorTop_img = pygame.transform.scale(pygame.image.load(
+            'assets/doorTop.png').convert_alpha(), (self.tileSize, self.tileSize))
+        self.doorBottom_img = pygame.transform.scale(pygame.image.load(
+            'assets/doorBottom.png').convert_alpha(), (self.tileSize, self.tileSize))
+
+
+        self.tileRect = self.grass_img.get_rect()
 
         # Define image info and level counter
-        self.num_images = 3
+        self.num_images = 5
         self.level = 1
+        self.selectedTile = 1
 
         # Define colours
         self.white = (255, 255, 255)
@@ -87,16 +95,24 @@ class LevelEditor():
                         # Key
                         self.screen.blit(
                             self.key_img, (col * self.tileSize, row * self.tileSize))
+                    elif self.world_data[row][col] == 4:
+                        # Door top
+                        self.screen.blit(
+                            self.doorTop_img, (col * self.tileSize, row * self.tileSize))
+                    elif self.world_data[row][col] == 5:
+                        # Door bottom
+                        self.screen.blit(
+                            self.doorBottom_img, (col * self.tileSize, row * self.tileSize))
 
     def save(self):
-        world_rects = []
+        world_coords = []
         for row in range(self.tileHeight):
             for col in range(self.tileWidth):
                 if self.world_data[row][col] > 0:
-                    world_rects.append(
-                        (self.world_data[row][col], (col * self.tileSize, row * self.tileSize)))
+                    world_coords.append(
+                        (self.world_data[row][col], (col * self.tileSize,row * self.tileSize)))
         with open(f'levels/level{self.level}at{self.tileMultiplier}', 'w') as file:
-            file.write(str(world_rects))
+            file.write(str(world_coords))
         with open(f'levels/level{self.level}at{self.tileMultiplier}.json', 'w') as file:
             json.dump(self.world_data, file)
         self.saveDialog.shown = False
@@ -136,18 +152,25 @@ class LevelEditor():
                     # Check click is within grid
                     if col < self.tileWidth and row < self.tileHeight and self.saveDialog.rect:
                         # Change tile
-                        if pygame.mouse.get_pressed()[0] == 1:
-                            self.world_data[row][col] += 1
-                            if self.world_data[row][col] > self.num_images:
-                                self.world_data[row][col] = 0
-                        elif pygame.mouse.get_pressed()[2] == 1:
-                            self.world_data[row][col] -= 1
-                            if self.world_data[row][col] < 0:
-                                self.world_data[row][col] = self.num_images
+                        if pygame.mouse.get_pressed()[0]:
+                            self.world_data[row][col] = 0
+                        elif pygame.mouse.get_pressed()[2]:
+                            self.world_data[row][col] = self.selectedTile
 
                 # Up and down key presses to change level
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_UP:
+                    # Change tile used
+                    if event.key == pygame.K_1:
+                        self.selectedTile = 1
+                    elif event.key == pygame.K_2:
+                        self.selectedTile = 2
+                    elif event.key == pygame.K_3:
+                        self.selectedTile = 3
+                    elif event.key == pygame.K_4:
+                        self.selectedTile = 4
+                    elif event.key == pygame.K_5:
+                        self.selectedTile = 5
+                    elif event.key == pygame.K_UP:
                         self.level += 1
                     elif event.key == pygame.K_DOWN and self.level > 1:
                         self.level -= 1
@@ -165,7 +188,7 @@ class LevelEditor():
 
             pygame.display.update()
 
-        pygame.quit()
+        pygame.display.quit()
 
 
 class Button():
