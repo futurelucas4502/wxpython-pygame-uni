@@ -1,6 +1,6 @@
 import pygame
 from pygame.locals import *
-import random
+import main
 
 # Define a Player object by extending pygame.sprite.Sprite
 # The surface drawn on the screen is now an attribute of 'player'
@@ -51,7 +51,7 @@ class Player(pygame.sprite.Sprite):
 
         tempY += self.y_velocity  # Store velocity in tempY so we have a copy of the number of tiles we're moving by so we can work out whether or not its safe to move without colliding
 
-        # Collision
+        # Collision of blocks
 
         for tile in game.world.level:
             block = pygame.Rect(tile[1][0], tile[1][1],
@@ -64,7 +64,7 @@ class Player(pygame.sprite.Sprite):
                     self.hasKey = True
                 elif tile[0] == 4 or tile[0] == 5:  # If colliding with the door
                     if self.hasKey:
-                        game.setup()
+                        game.setup(False)
                         return
                 elif tempX > 0:  # Moving right
                     tempX = block.left - self.rect.right
@@ -93,6 +93,19 @@ class Player(pygame.sprite.Sprite):
                     if self.rect.bottom == block.top:  # Allow players to hold space to jump
                         self.jumped = False
 
+        # Entity Collision
+        for entity in game.world.entities:
+            entity = entity.rect
+
+            if entity.colliderect(self.rect):
+                game.lives -= 1
+                if game.lives == 0:
+                    main.msg = "Out of lives D:"
+                    main.title = "Game Over!!!"
+                    main.gameRun = False
+                else:
+                    game.setup(True)
+
         self.rect.x += tempX
         self.rect.y += tempY
 
@@ -110,15 +123,16 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        # Random number between 1 and 0 aka true or false to decide original direction
-        self.move_direction = bool(random.randint(0, 1))
+        self.move_right = True
         self.counter = 0
 
     def update(self, screen):
-        if self.counter > 60:
-            self.move_direction = not self.move_direction
+        # If moved by 80 aka 2 tiles as tileWidth is 40
+        # TODO: Change this to use tileWidth passed into the enemy when its created
+        if self.counter == 80:
+            self.move_right = not self.move_right  # Change direction and reset counter
             self.counter = 0
-        if self.move_direction:
+        if self.move_right:
             self.rect.x += 1
         else:
             self.rect.x -= 1

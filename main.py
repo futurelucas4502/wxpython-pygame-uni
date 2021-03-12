@@ -1,7 +1,9 @@
 import run
 gameRun = False
 levelEditorRun = False
-error = ""
+error = False
+msg = ""
+title = ""
 
 
 def main():

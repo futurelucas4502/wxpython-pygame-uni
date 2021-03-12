@@ -82,9 +82,8 @@ class World():
                         elif self.world_data[row][col] > 0:
                             self.level.append(
                                 (self.world_data[row][col], (col * self.tileSize, row * self.tileSize)))
-        except Exception as error:
-            print(error)
-            main.error = "No (more) level's found or some kind of error occured. If there should be more levels try loading the level in world editor and resaving it :)"
+        except FileNotFoundError as error:
+            main.msg = "Success you win!!!"
             return True
 
     def update(self, screen, debug):
@@ -110,5 +109,7 @@ class World():
 
         except Exception as error:
             print(error)
-            main.error = "It's possible the world file is corrupt"
+            main.error = True
+            main.title = "Error"
+            main.msg = "It's possible the world file is corrupt"
             main.gameRun = False

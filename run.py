@@ -8,11 +8,16 @@ from level_editor import LevelEditor
 def game():
     app = wx.App()
     Menu(None, title="Main Menu", size=(250, 300),
-              style=wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX))
-    if main.error != "": # Error handler
-        wx.MessageDialog(None, main.error, "An error occured",
-                         wx.OK | wx.ICON_ERROR).ShowModal()
-        main.error = ""
+         style=wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX))
+
+    if main.msg != "":  # Message Handler
+        wx.MessageDialog(None, main.msg, main.title,
+                         wx.OK | wx.ICON_ERROR if main.error else wx.ICON_NONE).ShowModal()
+        main.error = False
+        main.msg = ""
+        main.title = ""
+
+
     app.MainLoop()  # When i click the start game button the gameRun variable gets changed to True then closes the menu meaning line 14 below runs
     if main.gameRun:
         Game()  # Start the game

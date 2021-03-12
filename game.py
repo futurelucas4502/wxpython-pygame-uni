@@ -20,6 +20,9 @@ class Game():
         self.clock = pygame.time.Clock()
         self.level = 0
 
+        # Create players lives in game so that they don't get reset when we reset the player or change level
+        self.lives = 3
+
         # Set grid size to a 16:9 aspect ratio as my resolution is divisible by 8 and dividing by 8 * 10 would give me a perfect 16:9 but i want more tiles so we do 8 * 5
         self.tileMultiplier = 5
         self.tileSize = 8 * self.tileMultiplier
@@ -31,14 +34,15 @@ class Game():
             "assets/key.png").convert_alpha(), (int(self.tileSize // 1.25), int(self.tileSize // 1.25)))
 
         # Setup the level and character
-        self.setup()
+        self.setup(False)
 
         # Finally Start game
         self.start()
 
-    def setup(self):
+    def setup(self, reset):
         # Increment level
-        self.level += 1
+        if not reset:
+            self.level += 1
         # Make player
         self.player = entities.Player(
             (self.tileSize, self.tileSize*2), (0, self.height - self.tileSize*3))
