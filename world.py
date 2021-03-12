@@ -2,7 +2,8 @@ import main
 import pygame
 import random
 import configparser
-import ast
+import json
+import entities
 
 
 class World():
@@ -30,6 +31,8 @@ class World():
 
         # Set sky colour
         self.sky = (173, 216, 230)
+        self.level = []
+        self.entities = []
 
         # Create a tile rect from any tile
         self.tileRect = self.grass.get_rect()
@@ -61,7 +64,6 @@ class World():
         array.append([1]*(self.tileWidth))
 
         # Convert to new coords format
-        self.level = []
         for row in range(self.tileHeight):
             for col in range(self.tileWidth):
                 if array[row][col] > 0:
@@ -70,8 +72,16 @@ class World():
 
     def worldGen(self, game):
         try:
-            with open(f'levels/level{game.level}at{game.tileMultiplier}') as f:
-                self.level = ast.literal_eval(f.read()) # TODO: Convert to rects inside the level_editor saving but first see what things in the rect need to be changed bc its not x and y
+            with open(f'levels/level{game.level}at{game.tileMultiplier}.json') as f:
+                self.world_data = json.load(f)
+                for row in range(self.tileHeight):
+                    for col in range(self.tileWidth):
+                        if self.world_data[row][col] == 6:
+                            self.entities.append(entities.Enemy(
+                                col * self.tileSize, row * self.tileSize))
+                        elif self.world_data[row][col] > 0:
+                            self.level.append(
+                                (self.world_data[row][col], (col * self.tileSize, row * self.tileSize)))
         except Exception as error:
             print(error)
             main.error = "No (more) level's found or some kind of error occured. If there should be more levels try loading the level in world editor and resaving it :)"
@@ -96,6 +106,7 @@ class World():
                     self.tileRect.x, self.tileRect.y = tile[1]
                     pygame.draw.rect(screen, (0, 0, 255),
                                      self.tileRect, 2)
+            [enemy.update(screen) for enemy in self.entities]
 
         except Exception as error:
             print(error)

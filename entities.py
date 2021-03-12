@@ -1,5 +1,6 @@
 import pygame
 from pygame.locals import *
+import random
 
 # Define a Player object by extending pygame.sprite.Sprite
 # The surface drawn on the screen is now an attribute of 'player'
@@ -65,7 +66,7 @@ class Player(pygame.sprite.Sprite):
                     if self.hasKey:
                         game.setup()
                         return
-                elif tempX > 0: # Moving right
+                elif tempX > 0:  # Moving right
                     tempX = block.left - self.rect.right
                 elif tempX < 0:  # Moving left
                     tempX = block.right - self.rect.left
@@ -100,7 +101,26 @@ class Player(pygame.sprite.Sprite):
         if game.debug:
             pygame.draw.rect(game.screen, (255, 0, 0), self.rect, 2)
 
+
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
 
+        self.image = pygame.image.load("assets/enemy.png")
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        # Random number between 1 and 0 aka true or false to decide original direction
+        self.move_direction = bool(random.randint(0, 1))
+        self.counter = 0
+
+    def update(self, screen):
+        if self.counter > 60:
+            self.move_direction = not self.move_direction
+            self.counter = 0
+        if self.move_direction:
+            self.rect.x += 1
+        else:
+            self.rect.x -= 1
+        self.counter += 1
+        screen.blit(self.image, self.rect)

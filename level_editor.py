@@ -34,6 +34,8 @@ class LevelEditor():
             'assets/doorTop.png').convert_alpha(), (self.tileSize, self.tileSize))
         self.doorBottom_img = pygame.transform.scale(pygame.image.load(
             'assets/doorBottom.png').convert_alpha(), (self.tileSize, self.tileSize))
+        self.enemy_img = pygame.transform.scale(pygame.image.load(
+            'assets/enemy.png').convert_alpha(), (self.tileSize, self.tileSize))
 
 
         self.tileRect = self.grass_img.get_rect()
@@ -103,16 +105,12 @@ class LevelEditor():
                         # Door bottom
                         self.screen.blit(
                             self.doorBottom_img, (col * self.tileSize, row * self.tileSize))
+                    elif self.world_data[row][col] == 6:
+                        # Door bottom
+                        self.screen.blit(
+                            self.enemy_img, (col * self.tileSize, row * self.tileSize))
 
     def save(self):
-        world_coords = []
-        for row in range(self.tileHeight):
-            for col in range(self.tileWidth):
-                if self.world_data[row][col] > 0:
-                    world_coords.append(
-                        (self.world_data[row][col], (col * self.tileSize,row * self.tileSize)))
-        with open(f'levels/level{self.level}at{self.tileMultiplier}', 'w') as file:
-            file.write(str(world_coords))
         with open(f'levels/level{self.level}at{self.tileMultiplier}.json', 'w') as file:
             json.dump(self.world_data, file)
         self.saveDialog.shown = False
@@ -170,6 +168,8 @@ class LevelEditor():
                         self.selectedTile = 4
                     elif event.key == pygame.K_5:
                         self.selectedTile = 5
+                    elif event.key == pygame.K_6:
+                        self.selectedTile = 6
                     elif event.key == pygame.K_UP:
                         self.level += 1
                     elif event.key == pygame.K_DOWN and self.level > 1:
