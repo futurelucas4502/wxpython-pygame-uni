@@ -7,7 +7,7 @@ from level_editor import LevelEditor
 
 def game():
     app = wx.App()
-    Menu(None, title="Main Menu", size=(250, 300),
+    Menu(200, None, title="Main Menu", size=(300, 400),
          style=wx.DEFAULT_FRAME_STYLE & ~(wx.RESIZE_BORDER | wx.MAXIMIZE_BOX))
 
     if main.msg != "":  # Message Handler

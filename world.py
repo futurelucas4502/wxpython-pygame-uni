@@ -83,6 +83,7 @@ class World():
                             self.level.append(
                                 (self.world_data[row][col], (col * self.tileSize, row * self.tileSize)))
         except FileNotFoundError as error:
+            #  = game.lives * 10 + game.level * 100
             main.msg = "Success you win!!!"
             return True
 
