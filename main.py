@@ -5,7 +5,8 @@ levelEditorRun = False
 error = False
 msg = ""
 title = ""
-
+score = 0
+player = ""
 
 def main():
     if run.game():  # Runs the game and returns True when it's done to rerun main and open the menu again

@@ -18,9 +18,7 @@ class Menu(wx.Frame):
 
         if not os.path.exists('config.ini'):
             self.config.add_section('settings')
-            self.config.add_section('highscores')
-            self.config.add_section('general')
-            self.config['general']['players'] = "[]"
+            self.config.add_section('players')
 
             self.config['settings']['experimental'] = "False"
 
@@ -34,7 +32,8 @@ class Menu(wx.Frame):
 
         # Create a panel in the frame
         self.main = Main(self, size=self.GetVirtualSize())
-        self.settings = Settings(self, size=(self.GetVirtualSize()[0], self.GetVirtualSize()[1] - settingsSize))
+        self.settings = Settings(self, size=(self.GetVirtualSize()[
+                                 0], self.GetVirtualSize()[1] - settingsSize))
         self.settings.Hide()  # Might be a better way of doing this if there is I can't find it
 
         # Centre the window on screen
@@ -65,7 +64,7 @@ class Main(wx.Panel):
 
         self.players = []
         [self.players.append(player)
-         for player in ast.literal_eval(self.GetParent().config['general']['players'])]
+         for player in self.GetParent().config['players']]
 
         # Draw window user selected heading
         self.playerLabel = wx.StaticText(
@@ -81,12 +80,12 @@ class Main(wx.Panel):
         self.playerCombo = wx.ComboBox(self, choices=self.players)
 
         # Draw buttons
-        self.startBtn = wx.Button(self, label="Start Game", size=(50, 0))
-        self.scoreBtn = wx.Button(self, label="Highscores", size=(50, 0))
-        self.settingsBtn = wx.Button(self, label="Settings", size=(50, 0))
+        self.startBtn = wx.Button(self, label="Start Game")
+        self.scoreBtn = wx.Button(self, label="Highscores")
+        self.settingsBtn = wx.Button(self, label="Settings")
         self.levelEditorBtn = wx.Button(
-            self, label="Level Editor", size=(50, 0))
-        self.quitBtn = wx.Button(self, label="Quit", size=(50, 0))
+            self, label="Level Editor")
+        self.quitBtn = wx.Button(self, label="Quit")
 
         # Add things to button column
         # Adds padding to the top to push it to the bottom
@@ -134,6 +133,7 @@ class Main(wx.Panel):
 
     def start(self, e):
         main.gameRun = True
+        main.player = self.playerCombo.GetValue()
         self.GetParent().Destroy()
 
     def score(self, e):
@@ -150,6 +150,15 @@ class Main(wx.Panel):
         main.levelEditorRun = True
         self.GetParent().Destroy()
 
+    def Show(self):
+        self.GetParent().config.read('config.ini')
+        self.players = []
+        [self.players.append(player) for player in
+            self.GetParent().config['players']]
+        self.playerCombo.Clear()
+        self.playerCombo.Append(self.players)
+        super().Show()
+
 
 class Settings(wx.Panel):
 
@@ -159,18 +168,20 @@ class Settings(wx.Panel):
         self.sizer = wx.BoxSizer(wx.VERTICAL)
 
         # Create window elements
-        self.playerInputLabel = wx.StaticText(self, label="New Player", style=wx.ALIGN_CENTRE)
+        self.playerInputLabel = wx.StaticText(
+            self, label="New Player", style=wx.ALIGN_CENTRE)
         self.playerInputLabel.SetFont(wx.Font(wx.FontInfo(15).Bold()))
         self.playerInput = wx.TextCtrl(self, style=wx.TE_PROCESS_ENTER)
 
-        self.backBtn = wx.Button(self, label="Back", size=(50, 0))
+        self.backBtn = wx.Button(self, label="Back")
 
         # Add things to button column
         # Adds padding to the top to push it to the bottom
         self.sizer.AddSpacer(20)
 
         # Horizontal center and 20 padding on all sides so buttons arent bunched together
-        self.sizer.Add(self.playerInputLabel, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 20)
+        self.sizer.Add(self.playerInputLabel, 1,
+                       wx.EXPAND | wx.LEFT | wx.RIGHT, 20)
         self.sizer.AddSpacer(10)
         self.sizer.Add(self.playerInput, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 20)
         self.sizer.AddSpacer(10)
@@ -184,18 +195,23 @@ class Settings(wx.Panel):
         # Bind events to the buttons to allow them to be clicked like an event listener really
         self.playerInput.Bind(wx.EVT_TEXT_ENTER, self.addPlayer)
         self.backBtn.Bind(wx.EVT_BUTTON, self.back)
-        self.Layout() 
+        self.Layout()
 
     def addPlayer(self, e):
-        players = ast.literal_eval(self.GetParent().config['general']['players'])
-        players.append(self.playerInput.GetLineText(0))
+        self.players = []
+        [self.players.append(player)
+         for player in self.GetParent().config['players']]
+        if self.playerInput.GetLineText(0).lower() not in self.players:
+            self.GetParent().config['players'][self.playerInput.GetLineText(
+                0).lower()] = '0'  # initial player score of 0
+            wx.MessageBox("This player was successfully added", "Success",
+                          wx.ICON_INFORMATION | wx.OK)
+        else:
+            wx.MessageBox("This player already exists", "Error",
+                          wx.ICON_INFORMATION | wx.OK)
 
-        self.GetParent().config['general']['players'] = f'{players}'
         with open('config.ini', 'w') as configfile:
             self.GetParent().config.write(configfile)
-        self.GetParent().config.read('config.ini') # TODO: This line doesnt work probably put in function on the parent
-
-
 
     def back(self, e):
         if self.IsShown():

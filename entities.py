@@ -78,7 +78,7 @@ class Player(pygame.sprite.Sprite):
                     self.hasKey = True
                 elif tile[0] == 4 or tile[0] == 5:  # If colliding with the door
                     if self.hasKey:
-                        game.setup()
+                        game.setup(False)
                         return
                 else:
                     # Check if jumping and will hit head on block if they move then move them as close as they can get to the block without overlapping and come back down
@@ -100,6 +100,7 @@ class Player(pygame.sprite.Sprite):
             if entity.colliderect(self.rect):
                 game.lives -= 1
                 if game.lives == 0:
+                    main.score = game.lives * 10 + game.level * 100
                     main.msg = "Out of lives D:"
                     main.title = "Game Over!!!"
                     main.gameRun = False
