@@ -18,12 +18,16 @@ class Player(pygame.sprite.Sprite):
             pygame.image.load('assets/player.png').convert_alpha(), size), True, False)
         self.image = self.playerRight
         self.rect = self.image.get_rect()
-        self.rect.x = pos[0]
-        self.rect.y = pos[1]
+        self.setPos(pos)
         self.y_velocity = 0
         self.size = size
         self.jumped = False
         self.hasKey = False
+        self.lives = 3
+
+    def setPos(self, pos):
+        self.rect.x = pos[0]
+        self.rect.y = pos[1]
 
     def update(self, game):
         tempX = 0
@@ -64,7 +68,8 @@ class Player(pygame.sprite.Sprite):
                     self.hasKey = True
                 elif tile[0] == 4 or tile[0] == 5:  # If colliding with the door
                     if self.hasKey:
-                        game.setup(False)
+                        game.loadWorld()
+                        self.setPos((0, game.height - game.tileSize*3))
                         return
                 elif tempX > 0:  # Moving right
                     tempX = block.left - self.rect.right
@@ -78,7 +83,8 @@ class Player(pygame.sprite.Sprite):
                     self.hasKey = True
                 elif tile[0] == 4 or tile[0] == 5:  # If colliding with the door
                     if self.hasKey:
-                        game.setup(False)
+                        game.loadWorld()
+                        self.setPos((0, game.height - game.tileSize*3))
                         return
                 else:
                     # Check if jumping and will hit head on block if they move then move them as close as they can get to the block without overlapping and come back down
@@ -93,22 +99,20 @@ class Player(pygame.sprite.Sprite):
                     if self.rect.bottom == block.top:  # Allow players to hold space to jump
                         self.jumped = False
 
+        self.rect.x += tempX
+        self.rect.y += tempY
         # Entity Collision
         for entity in game.world.entities:
             entity = entity.rect
 
             if entity.colliderect(self.rect):
-                game.lives -= 1
-                if game.lives == 0:
-                    main.score = game.lives * 10 + game.level * 100
+                self.lives -= 1
+                if self.lives == 0:
                     main.msg = "Out of lives D:"
                     main.title = "Game Over!!!"
                     main.gameRun = False
                 else:
-                    game.setup(True)
-
-        self.rect.x += tempX
-        self.rect.y += tempY
+                    self.setPos((0, game.height - game.tileSize*3))
 
         # Draw Player
         game.screen.blit(self.image, self.rect)

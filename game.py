@@ -3,6 +3,7 @@ from pygame.locals import *
 import pygame
 import entities
 import main
+import configparser
 
 
 class Game():
@@ -16,12 +17,9 @@ class Game():
         pygame.display.set_caption("Game")
 
         # Set font and fps clock sky and start level
-        self.font = pygame.font.SysFont("Arial", 18)
+        self.font = pygame.font.Font(None, 30)
         self.clock = pygame.time.Clock()
         self.level = 0
-
-        # Create players lives in game so that they don't get reset when we reset the player or change level
-        self.lives = 3
 
         # Set grid size to a 16:9 aspect ratio as my resolution is divisible by 8 and dividing by 8 * 10 would give me a perfect 16:9 but i want more tiles so we do 8 * 5
         self.tileMultiplier = 5
@@ -34,20 +32,16 @@ class Game():
             "assets/key.png").convert_alpha(), (int(self.tileSize // 1.25), int(self.tileSize // 1.25)))
 
         # Setup the level and character
-        self.setup(False)
+        self.player = entities.Player(
+            (self.tileSize, self.tileSize*2), (0, self.height - self.tileSize*3))
+
+        self.loadWorld()
 
         # Finally Start game
         self.start()
 
-    def setup(self, reset):
-        # Increment level
-        if not reset:
-            self.level += 1
-        # Make player
-        self.player = entities.Player(
-            (self.tileSize, self.tileSize*2), (0, self.height - self.tileSize*3))
-
-        # Make world
+    def loadWorld(self):
+        self.level += 1
         self.world = World(self)
 
     def start(self):
@@ -75,12 +69,24 @@ class Game():
             pygame.display.update()
 
         pygame.display.quit()
+        self.save()
 
     def updateGameInfo(self):
         # can return None in very very rare instances so the code below will fix that as non null coelessing characters arent in python yet but there is a request for them here: https://www.python.org/dev/peps/pep-0505/
-        fps = str(int(self.clock.get_fps()))
-        if fps == "" or fps == None:
-            fps = "00"
-        self.screen.blit(self.font.render(fps, 1, (255, 255, 255)), (10, 7.5))
+        self.fps = str(int(self.clock.get_fps()))
+        if self.fps == "" or self.fps == None:
+            self.fps = "00"
+        self.screen.blit(self.font.render(
+            self.fps, 1, (255, 255, 255)), (10, 7.5))
         if self.player.hasKey:
             self.screen.blit(self.key, (1240, 7.5))
+
+    def save(self):
+        # Save score data
+        config = configparser.ConfigParser()
+        score = self.player.lives * 10 + (self.level - 1) * 100
+        config.read('config.ini')
+        if int(config['players'][main.player]) < score:
+            config['players'][main.player] = str(score)
+        with open('config.ini', 'w') as configfile:
+            config.write(configfile)

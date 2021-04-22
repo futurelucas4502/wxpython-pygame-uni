@@ -2,7 +2,6 @@ import wx
 import main
 import os
 import configparser
-import ast
 
 
 class Menu(wx.Frame):
@@ -68,12 +67,12 @@ class Main(wx.Panel):
 
         # Draw window user selected heading
         self.playerLabel = wx.StaticText(
-            self, label="Selected Player: None", style=wx.ALIGN_CENTRE)
+            self, label="Selected Player: "+self.players[0])
         self.playerLabel.SetFont(wx.Font(wx.FontInfo(15).Bold()))
         self.playerLabel.Wrap(260)
 
         self.infoLabel = wx.StaticText(
-            self, label="Make new players from the settings", style=wx.ALIGN_CENTRE)
+            self, label="Make new players from the settings")
         self.infoLabel.SetFont(wx.Font(wx.FontInfo(10)))
 
         # Draw user selector
@@ -92,8 +91,10 @@ class Main(wx.Panel):
         self.sizer.AddSpacer(20)
 
         # Add the user selection code to the sizer
-        self.sizer.Add(self.playerLabel, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 20)
-        self.sizer.Add(self.infoLabel, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 20)
+        self.sizer.Add(self.playerLabel, 1, wx.ALIGN_CENTRE |
+                       wx.LEFT | wx.RIGHT, 20)
+        self.sizer.Add(self.infoLabel, 1, wx.ALIGN_CENTRE |
+                       wx.LEFT | wx.RIGHT, 20)
         self.sizer.Add(self.playerCombo, 1, wx.EXPAND | wx.ALL, 20)
 
         # Horizontal center and 20 padding on all sides so buttons arent bunched together

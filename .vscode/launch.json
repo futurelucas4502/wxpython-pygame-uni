@@ -10,13 +10,6 @@
             "request": "launch",
             "program": "main.py",
             "console": "integratedTerminal"
-        },
-        {
-            "name": "Python: Launch Level Editor",
-            "type": "python",
-            "request": "launch",
-            "program": "level_editor.py",
-            "console": "integratedTerminal"
         }
     ]
 }
