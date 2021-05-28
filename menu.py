@@ -123,6 +123,7 @@ class Main(wx.Panel):
         self.settingsBtn.Bind(wx.EVT_BUTTON, self.settings)
         self.levelEditorBtn.Bind(wx.EVT_BUTTON, self.levelEditor)
         self.quitBtn.Bind(wx.EVT_BUTTON, self.onQuit)
+        self.playerCombo.SetSelection(0)
         self.Layout()
 
     def OnPlayerCombo(self, e):
